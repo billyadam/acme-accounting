@@ -33,32 +33,71 @@ export class TicketsController {
   async create(@Body() newTicketDto: newTicketDto) {
     const { type, companyId } = newTicketDto;
 
-    const category =
-      type === TicketType.managementReport
-        ? TicketCategory.accounting
-        : TicketCategory.corporate;
+    let category: TicketCategory;
+    switch (type) {
+      case TicketType.managementReport:
+        category = TicketCategory.accounting;
+        break;
+      case TicketType.strikeOff:
+        category = TicketCategory.management;
+        break;
+      default:
+        category = TicketCategory.corporate;
+        break;
+    }
 
-    const userRole =
-      type === TicketType.managementReport
-        ? UserRole.accountant
-        : UserRole.corporateSecretary;
+    let validRole: Array<UserRole>;
+    switch (type) {
+      case TicketType.managementReport:
+        validRole = [UserRole.accountant];
+        break;
+      case TicketType.strikeOff:
+        validRole = [UserRole.director];
+        break;
+      default:
+        validRole = [UserRole.corporateSecretary, UserRole.director];
+        break;
+    }
 
     const assignees = await User.findAll({
-      where: { companyId, role: userRole },
+      where: { companyId, role: validRole },
       order: [['createdAt', 'DESC']],
     });
 
-    if (!assignees.length)
+    if (!assignees.length) {
+      const userRoleStr = validRole.join(' or ');
       throw new ConflictException(
-        `Cannot find user with role ${userRole} to create a ticket`,
+        `Cannot find user with role ${userRoleStr} to create a ticket`,
+      );
+    }
+
+    let assignee = assignees[0];
+    if (type === TicketType.registrationAddressChange) {
+      const userCorporateSecretary = assignees.filter(
+        (assignee) => assignee.role === UserRole.corporateSecretary,
       );
 
-    if (userRole === UserRole.corporateSecretary && assignees.length > 1)
-      throw new ConflictException(
-        `Multiple users with role ${userRole}. Cannot create a ticket`,
+      if (userCorporateSecretary.length > 1)
+        throw new ConflictException(
+          `Multiple users with role ${UserRole.corporateSecretary}. Cannot create a ticket`,
+        );
+
+      const userDirector = assignees.filter(
+        (assignee) => assignee.role === UserRole.director,
       );
 
-    const assignee = assignees[0];
+      if (!userCorporateSecretary.length && userDirector.length > 1)
+        throw new ConflictException(
+          `Multiple users with role ${UserRole.director}. Cannot create a ticket`,
+        );
+
+      assignee = userCorporateSecretary.length
+        ? userCorporateSecretary[0]
+        : userDirector[0];
+    } else if (type === TicketType.strikeOff && assignees.length > 1)
+      throw new ConflictException(
+        `Multiple users with role ${UserRole.director}. Cannot create a ticket`,
+      );
 
     const ticket = await Ticket.create({
       companyId,
