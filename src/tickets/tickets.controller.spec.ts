@@ -125,6 +125,30 @@ describe('TicketsController', () => {
         expect(ticket.status).toBe(TicketStatus.open);
       });
 
+      it('if there is 1 secretary and there is 1 director, creates registrationAddressChange ticket using the secretary (not the director)', async () => {
+        const company = await Company.create({ name: 'test' });
+        const userSecretary = await User.create({
+          name: 'Test Director',
+          role: UserRole.corporateSecretary,
+          companyId: company.id,
+        });
+
+        await User.create({
+          name: 'Test Director',
+          role: UserRole.director,
+          companyId: company.id,
+        });
+
+        const ticket = await controller.create({
+          companyId: company.id,
+          type: TicketType.registrationAddressChange,
+        });
+
+        expect(ticket.category).toBe(TicketCategory.corporate);
+        expect(ticket.assigneeId).toBe(userSecretary.id);
+        expect(ticket.status).toBe(TicketStatus.open);
+      });
+
       it('if there are multiple secretaries, throw', async () => {
         const company = await Company.create({ name: 'test' });
         await User.create({
