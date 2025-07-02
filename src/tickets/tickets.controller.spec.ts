@@ -150,7 +150,7 @@ describe('TicketsController', () => {
         );
       });
 
-      it('if there if no secretaries but multiple directors, throw', async () => {
+      it('if there is no secretaries but multiple directors, throw', async () => {
         const company = await Company.create({ name: 'test' });
         await User.create({
           name: 'Test Dicrector',
