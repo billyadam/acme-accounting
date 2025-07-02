@@ -128,7 +128,7 @@ describe('TicketsController', () => {
       it('if there is 1 secretary and there is 1 director, creates registrationAddressChange ticket using the secretary (not the director)', async () => {
         const company = await Company.create({ name: 'test' });
         const userSecretary = await User.create({
-          name: 'Test Director',
+          name: 'Test Secretary',
           role: UserRole.corporateSecretary,
           companyId: company.id,
         });
