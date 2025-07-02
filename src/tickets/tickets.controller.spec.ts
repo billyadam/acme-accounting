@@ -132,6 +132,31 @@ describe('TicketsController', () => {
         );
       });
 
+      it('if there if no secretaries but multiple directors, throw', async () => {
+        const company = await Company.create({ name: 'test' });
+        await User.create({
+          name: 'Test Dicrector',
+          role: UserRole.director,
+          companyId: company.id,
+        });
+        await User.create({
+          name: 'Test Director',
+          role: UserRole.director,
+          companyId: company.id,
+        });
+
+        await expect(
+          controller.create({
+            companyId: company.id,
+            type: TicketType.registrationAddressChange,
+          }),
+        ).rejects.toEqual(
+          new ConflictException(
+            `Multiple users with role director. Cannot create a ticket`,
+          ),
+        );
+      });
+
       it('if there is no secretary or director, throw', async () => {
         const company = await Company.create({ name: 'test' });
 
