@@ -6,9 +6,13 @@ import {
   TicketType,
 } from '../../db/models/Ticket';
 import { User, UserRole } from '../../db/models/User';
+import { InjectConnection } from '@nestjs/sequelize';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class TicketsService {
+  constructor(@InjectConnection() private readonly sequelize: Sequelize) {}
+
   async createManagementReportTicket(companyId: number) {
     const category = TicketCategory.accounting;
     const type = TicketType.managementReport;
@@ -57,13 +61,30 @@ export class TicketsService {
         `Multiple users with role ${UserRole.director}. Cannot create a ticket`,
       );
 
-    return await Ticket.create({
-      companyId,
-      assigneeId: assignee.id,
-      category,
-      type,
-      status: TicketStatus.open,
+    const resTicket = await this.sequelize.transaction(async (t) => {
+      void (await Ticket.update(
+        {
+          status: TicketStatus.resolved,
+        },
+        {
+          where: { companyId, status: TicketStatus.open },
+          transaction: t,
+        },
+      ));
+
+      return await Ticket.create(
+        {
+          companyId,
+          assigneeId: assignee.id,
+          category,
+          type,
+          status: TicketStatus.open,
+        },
+        { transaction: t },
+      );
     });
+
+    return resTicket;
   }
   async createRegisAddrChangeTicket(companyId: number) {
     const category = TicketCategory.corporate;
