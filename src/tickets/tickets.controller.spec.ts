@@ -76,6 +76,70 @@ describe('TicketsController', () => {
       expect(ticket.status).toBe(TicketStatus.open);
     });
 
+    it('if the service create strikeOff successfully', async () => {
+      const company = await Company.create({ name: 'test' });
+      const user = await User.create({
+        name: 'Test User',
+        role: UserRole.director,
+        companyId: company.id,
+      });
+
+      const returnedTicketMngt = await Ticket.create({
+        companyId: company.id,
+        assigneeId: user.id,
+        category: TicketCategory.management,
+        type: TicketType.strikeOff,
+        status: TicketStatus.open,
+      });
+
+      mockTicketsService.createManagementReportTicket.mockResolvedValue(
+        returnedTicketMngt,
+      );
+
+      const ticket = await controller.create({
+        companyId: company.id,
+        type: TicketType.managementReport,
+      });
+
+      expect(ticket.category).toBe(TicketCategory.management);
+      expect(ticket.assigneeId).toBe(user.id);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.strikeOff);
+      expect(ticket.status).toBe(TicketStatus.open);
+    });
+
+    it('if the service create registration address ticket successfully', async () => {
+      const company = await Company.create({ name: 'test' });
+      const user = await User.create({
+        name: 'Test User',
+        role: UserRole.corporateSecretary,
+        companyId: company.id,
+      });
+
+      const returnedTicketMngt = await Ticket.create({
+        companyId: company.id,
+        assigneeId: user.id,
+        category: TicketCategory.corporate,
+        type: TicketType.registrationAddressChange,
+        status: TicketStatus.open,
+      });
+
+      mockTicketsService.createManagementReportTicket.mockResolvedValue(
+        returnedTicketMngt,
+      );
+
+      const ticket = await controller.create({
+        companyId: company.id,
+        type: TicketType.managementReport,
+      });
+
+      expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.assigneeId).toBe(user.id);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.registrationAddressChange);
+      expect(ticket.status).toBe(TicketStatus.open);
+    });
+
     it('if the service throw an error, throw', async () => {
       const company = await Company.create({ name: 'test' });
       const error = new ConflictException(
