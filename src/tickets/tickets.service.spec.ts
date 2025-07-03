@@ -6,7 +6,7 @@ import { ConflictException } from '@nestjs/common';
 import { TicketCategory, TicketStatus } from '../../db/models/Ticket';
 import { User, UserRole } from '../../db/models/User';
 
-describe('ReportsService', () => {
+describe('TicketsService', () => {
   let service: TicketsService;
 
   beforeEach(async () => {
