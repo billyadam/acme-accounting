@@ -51,7 +51,6 @@ export class ReportsService {
     const outputFile = 'out/yearly.csv';
     const cashByYear: Record<string, number> = {};
     const tmpDirResult = await fs.readdir(tmpDir);
-    // tmpDirResult.forEach((file) => {
     for (const file of tmpDirResult) {
       if (file.endsWith('.csv') && file !== 'yearly.csv') {
         const readFile = await fs.readFile(path.join(tmpDir, file), 'utf-8');
@@ -124,7 +123,6 @@ export class ReportsService {
       }
     }
     const tmpDirResult = await fs.readdir(tmpDir);
-    // fs.readdirSync(tmpDir).forEach((file) => {
     for (const file of tmpDirResult) {
       if (file.endsWith('.csv') && file !== 'fs.csv') {
         const readFile = await fs.readFile(path.join(tmpDir, file), 'utf-8');
