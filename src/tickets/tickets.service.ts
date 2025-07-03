@@ -14,19 +14,17 @@ export class TicketsService {
     const type = TicketType.managementReport;
     const validRole = [UserRole.accountant];
 
-    const assignees = await User.findAll({
+    const assignee = await User.findOne({
       where: { companyId, role: validRole },
       order: [['createdAt', 'DESC']],
     });
 
-    if (!assignees.length) {
+    if (!assignee) {
       const userRoleStr = validRole.join(' or ');
       throw new ConflictException(
         `Cannot find user with role ${userRoleStr} to create a ticket`,
       );
     }
-
-    const assignee = assignees[0];
 
     return await Ticket.create({
       companyId,
