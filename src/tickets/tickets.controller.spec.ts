@@ -84,7 +84,7 @@ describe('TicketsController', () => {
         companyId: company.id,
       });
 
-      const returnedTicketMngt = await Ticket.create({
+      const returnedTicketStrikeOff = await Ticket.create({
         companyId: company.id,
         assigneeId: user.id,
         category: TicketCategory.management,
@@ -92,13 +92,13 @@ describe('TicketsController', () => {
         status: TicketStatus.open,
       });
 
-      mockTicketsService.createManagementReportTicket.mockResolvedValue(
-        returnedTicketMngt,
+      mockTicketsService.createStrikeOffTicket.mockResolvedValue(
+        returnedTicketStrikeOff,
       );
 
       const ticket = await controller.create({
         companyId: company.id,
-        type: TicketType.managementReport,
+        type: TicketType.strikeOff,
       });
 
       expect(ticket.category).toBe(TicketCategory.management);
@@ -116,24 +116,24 @@ describe('TicketsController', () => {
         companyId: company.id,
       });
 
-      const returnedTicketMngt = await Ticket.create({
+      const returnedTicketRegisAddr = await Ticket.create({
         companyId: company.id,
         assigneeId: user.id,
-        category: TicketCategory.corporate,
+        category: TicketCategory.accounting,
         type: TicketType.registrationAddressChange,
         status: TicketStatus.open,
       });
 
-      mockTicketsService.createManagementReportTicket.mockResolvedValue(
-        returnedTicketMngt,
+      mockTicketsService.createRegisAddrChangeTicket.mockResolvedValue(
+        returnedTicketRegisAddr,
       );
 
       const ticket = await controller.create({
         companyId: company.id,
-        type: TicketType.managementReport,
+        type: TicketType.registrationAddressChange,
       });
 
-      expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.category).toBe(TicketCategory.accounting);
       expect(ticket.assigneeId).toBe(user.id);
       expect(ticket.companyId).toBe(company.id);
       expect(ticket.type).toBe(TicketType.registrationAddressChange);
