@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TicketsService } from './tickets.service';
 import { Company } from '../../db/models/Company';
 import { ConflictException } from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { DbModule } from '../db.module';
 
 import {
   Ticket,
@@ -16,6 +18,7 @@ describe('TicketsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [DbModule, SequelizeModule.forFeature([Ticket])],
       providers: [TicketsService],
     }).compile();
 
