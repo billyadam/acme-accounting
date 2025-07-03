@@ -3,7 +3,12 @@ import { TicketsService } from './tickets.service';
 import { Company } from '../../db/models/Company';
 import { ConflictException } from '@nestjs/common';
 
-import { TicketCategory, TicketStatus } from '../../db/models/Ticket';
+import {
+  Ticket,
+  TicketCategory,
+  TicketStatus,
+  TicketType,
+} from '../../db/models/Ticket';
 import { User, UserRole } from '../../db/models/User';
 
 describe('TicketsService', () => {
@@ -83,6 +88,50 @@ describe('TicketsService', () => {
 
       expect(ticket.category).toBe(TicketCategory.corporate);
       expect(ticket.assigneeId).toBe(user.id);
+      expect(ticket.status).toBe(TicketStatus.open);
+    });
+
+    it('if there is already another registrationAddressChange ticket, throw', async () => {
+      const company = await Company.create({ name: 'test' });
+      const user = await User.create({
+        name: 'Test Director',
+        role: UserRole.director,
+        companyId: company.id,
+      });
+      await Ticket.create({
+        type: TicketType.registrationAddressChange,
+        status: TicketStatus.open,
+        companyId: company.id,
+        assigneeId: user.id,
+      })
+
+      await expect(
+        service.createRegisAddrChangeTicket(company.id),
+      ).rejects.toEqual(
+        new ConflictException(
+          `Ticket with type ${TicketType.registrationAddressChange} already existed for this company`,
+        ),
+      );
+    });
+
+    it('if there is 1 secretary and there is 1 director, creates registrationAddressChange ticket using the secretary (not the director)', async () => {
+      const company = await Company.create({ name: 'test' });
+      const userSecretary = await User.create({
+        name: 'Test Secretary',
+        role: UserRole.corporateSecretary,
+        companyId: company.id,
+      });
+
+      await User.create({
+        name: 'Test Director',
+        role: UserRole.director,
+        companyId: company.id,
+      });
+
+      const ticket = await service.createRegisAddrChangeTicket(company.id);
+
+      expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.assigneeId).toBe(userSecretary.id);
       expect(ticket.status).toBe(TicketStatus.open);
     });
 

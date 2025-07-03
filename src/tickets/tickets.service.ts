@@ -72,6 +72,15 @@ export class TicketsService {
     const type = TicketType.registrationAddressChange;
     const validRole = [UserRole.corporateSecretary, UserRole.director];
 
+    const prevRegisAddrTicket = await Ticket.count({
+      where: { companyId, type: TicketType.registrationAddressChange },
+    });
+
+    if (prevRegisAddrTicket)
+      throw new ConflictException(
+        `Ticket with type ${TicketType.registrationAddressChange} already existed for this company`,
+      );
+
     const assignees = await User.findAll({
       where: { companyId, role: validRole },
       order: [['createdAt', 'DESC']],
