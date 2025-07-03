@@ -232,19 +232,52 @@ describe('TicketsService', () => {
   });
 
   describe('createStrikeOffTicket', () => {
-    it('if there is exactly 1 director, creates strikeOff ticket', async () => {
+    it('if there is exactly 1 director, creates strikeOff ticket and resolve all other ticket from the company', async () => {
       const company = await Company.create({ name: 'test' });
-      const user = await User.create({
+      const userDirector = await User.create({
         name: 'Test Director',
         role: UserRole.director,
         companyId: company.id,
       });
 
+      const userAccountant = await User.create({
+        name: 'Test Accountant',
+        role: UserRole.accountant,
+        companyId: company.id,
+      });
+
+      await Ticket.create({
+        type: TicketType.registrationAddressChange,
+        status: TicketStatus.open,
+        companyId: company.id,
+        assigneeId: userDirector.id,
+      });
+
+      await Ticket.create({
+        type: TicketType.registrationAddressChange,
+        status: TicketStatus.open,
+        companyId: company.id,
+        assigneeId: userDirector.id,
+      });
+
+      await Ticket.create({
+        type: TicketType.managementReport,
+        status: TicketStatus.open,
+        companyId: company.id,
+        assigneeId: userAccountant.id,
+      });
+
       const ticket = await service.createStrikeOffTicket(company.id);
 
+      const resolvedTicketsCount = await Ticket.count({
+        where: { companyId: company.id, status: TicketStatus.resolved },
+      });
+
       expect(ticket.category).toBe(TicketCategory.management);
-      expect(ticket.assigneeId).toBe(user.id);
+      expect(ticket.assigneeId).toBe(userDirector.id);
       expect(ticket.status).toBe(TicketStatus.open);
+
+      expect(resolvedTicketsCount).toBe(3);
     });
 
     it('if there are multiple directors, throw', async () => {
