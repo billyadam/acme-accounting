@@ -11,8 +11,8 @@ export class ReportsService {
     fs: 'idle',
   };
 
-  state(scope: string) {
-    return this.states[scope];
+  state(scope: string): string {
+    return String(this.states[scope]);
   }
 
   async accounts() {
@@ -133,7 +133,7 @@ export class ReportsService {
         for (const line of lines) {
           const [, account, , debit, credit] = line.split(',');
 
-          if (balances.hasOwnProperty(account)) {
+          if (balances[account]) {
             balances[account] +=
               parseFloat(String(debit || 0)) - parseFloat(String(credit || 0));
           }
