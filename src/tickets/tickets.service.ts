@@ -1,0 +1,117 @@
+import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  Ticket,
+  TicketCategory,
+  TicketStatus,
+  TicketType,
+} from '../../db/models/Ticket';
+import { User, UserRole } from '../../db/models/User';
+
+@Injectable()
+export class TicketsService {
+  async createManagementReportTicket(companyId: number) {
+    const category = TicketCategory.accounting;
+    const type = TicketType.managementReport;
+    const validRole = [UserRole.accountant];
+
+    const assignees = await User.findAll({
+      where: { companyId, role: validRole },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!assignees.length) {
+      const userRoleStr = validRole.join(' or ');
+      throw new ConflictException(
+        `Cannot find user with role ${userRoleStr} to create a ticket`,
+      );
+    }
+
+    const assignee = assignees[0];
+
+    return await Ticket.create({
+      companyId,
+      assigneeId: assignee.id,
+      category,
+      type,
+      status: TicketStatus.open,
+    });
+  }
+  async createStrikeOffTicket(companyId: number) {
+    const category = TicketCategory.management;
+    const type = TicketType.strikeOff;
+    const validRole = [UserRole.director];
+
+    const assignees = await User.findAll({
+      where: { companyId, role: validRole },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!assignees.length) {
+      const userRoleStr = validRole.join(' or ');
+      throw new ConflictException(
+        `Cannot find user with role ${userRoleStr} to create a ticket`,
+      );
+    }
+
+    const assignee = assignees[0];
+    if (assignees.length > 1)
+      throw new ConflictException(
+        `Multiple users with role ${UserRole.director}. Cannot create a ticket`,
+      );
+
+    return await Ticket.create({
+      companyId,
+      assigneeId: assignee.id,
+      category,
+      type,
+      status: TicketStatus.open,
+    });
+  }
+  async createRegisAddrChangeTicket(companyId: number) {
+    const category = TicketCategory.corporate;
+    const type = TicketType.strikeOff;
+    const validRole = [UserRole.corporateSecretary, UserRole.director];
+
+    const assignees = await User.findAll({
+      where: { companyId, role: validRole },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!assignees.length) {
+      const userRoleStr = validRole.join(' or ');
+      throw new ConflictException(
+        `Cannot find user with role ${userRoleStr} to create a ticket`,
+      );
+    }
+
+    const userCorporateSecretary = assignees.filter(
+      (assignee) => assignee.role === UserRole.corporateSecretary,
+    );
+
+    if (userCorporateSecretary.length > 1)
+      throw new ConflictException(
+        `Multiple users with role ${UserRole.corporateSecretary}. Cannot create a ticket`,
+      );
+
+    const userDirector = assignees.filter(
+      (assignee) => assignee.role === UserRole.director,
+    );
+
+    if (!userCorporateSecretary.length && userDirector.length > 1)
+      throw new ConflictException(
+        `Multiple users with role ${UserRole.director}. Cannot create a ticket`,
+      );
+
+    const assignee = userCorporateSecretary.length
+      ? userCorporateSecretary[0]
+      : userDirector[0];
+
+    return await Ticket.create({
+      companyId,
+      assigneeId: assignee.id,
+      category,
+      type,
+      status: TicketStatus.open,
+    });
+  }
+}
