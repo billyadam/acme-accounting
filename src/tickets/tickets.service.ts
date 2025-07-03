@@ -69,7 +69,7 @@ export class TicketsService {
   }
   async createRegisAddrChangeTicket(companyId: number) {
     const category = TicketCategory.corporate;
-    const type = TicketType.strikeOff;
+    const type = TicketType.registrationAddressChange;
     const validRole = [UserRole.corporateSecretary, UserRole.director];
 
     const assignees = await User.findAll({
