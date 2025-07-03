@@ -103,7 +103,7 @@ describe('TicketsService', () => {
         status: TicketStatus.open,
         companyId: company.id,
         assigneeId: user.id,
-      })
+      });
 
       await expect(
         service.createRegisAddrChangeTicket(company.id),
