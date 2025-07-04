@@ -43,6 +43,37 @@ describe('TicketsController', () => {
     console.log(res);
   });
 
+  describe('findAll', () => {
+    it('if successfully return result', async () => {
+      const company = await Company.create({ name: 'test' });
+      const user = await User.create({
+        name: 'Test Director',
+        role: UserRole.director,
+        companyId: company.id,
+      });
+
+      await Ticket.create({
+        companyId: company.id,
+        assigneeId: user.id,
+        category: TicketCategory.management,
+        type: TicketType.managementReport,
+        status: TicketStatus.open,
+      });
+
+      await Ticket.create({
+        companyId: company.id,
+        assigneeId: user.id,
+        category: TicketCategory.management,
+        type: TicketType.registrationAddressChange,
+        status: TicketStatus.open,
+      });
+
+      const tickets = await controller.findAll();
+
+      expect(tickets.length).toBe(2);
+    });
+  });
+
   describe('create', () => {
     it('if the service create managementReport successfully', async () => {
       const company = await Company.create({ name: 'test' });
