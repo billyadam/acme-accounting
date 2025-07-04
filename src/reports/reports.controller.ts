@@ -20,6 +20,6 @@ export class ReportsController {
     void this.reportsService.accounts();
     void this.reportsService.yearly();
     void this.reportsService.fs();
-    return { message: 'finished' };
+    return { message: 'proccessing' };
   }
 }

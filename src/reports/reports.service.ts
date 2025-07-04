@@ -16,7 +16,7 @@ export class ReportsService {
   }
 
   async accounts() {
-    this.states.accounts = 'starting';
+    this.states.accounts = 'proccessing';
     const start = performance.now();
     const tmpDir = 'tmp';
     const outputFile = 'out/accounts.csv';
@@ -45,7 +45,7 @@ export class ReportsService {
   }
 
   async yearly() {
-    this.states.yearly = 'starting';
+    this.states.yearly = 'proccessing';
     const start = performance.now();
     const tmpDir = 'tmp';
     const outputFile = 'out/yearly.csv';
@@ -79,7 +79,7 @@ export class ReportsService {
   }
 
   async fs() {
-    this.states.fs = 'starting';
+    this.states.fs = 'proccessing';
     const start = performance.now();
     const tmpDir = 'tmp';
     const outputFile = 'out/fs.csv';
