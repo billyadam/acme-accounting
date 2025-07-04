@@ -91,7 +91,7 @@ export class TicketsService {
     const type = TicketType.registrationAddressChange;
     const validRole = [UserRole.corporateSecretary, UserRole.director];
 
-    const prevRegisAddrTicket = await Ticket.count({
+    const prevRegisAddrTicket = await Ticket.findOne({
       where: { companyId, type: TicketType.registrationAddressChange },
     });
 
