@@ -61,6 +61,8 @@ describe('TicketsService', () => {
       const ticket = await service.createManagementReportTicket(company.id);
 
       expect(ticket.category).toBe(TicketCategory.accounting);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.managementReport);
       expect(ticket.assigneeId).toBe(user2.id);
       expect(ticket.status).toBe(TicketStatus.open);
     });
@@ -90,6 +92,8 @@ describe('TicketsService', () => {
       const ticket = await service.createRegisAddrChangeTicket(company.id);
 
       expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.registrationAddressChange);
       expect(ticket.assigneeId).toBe(user.id);
       expect(ticket.status).toBe(TicketStatus.open);
     });
@@ -134,6 +138,8 @@ describe('TicketsService', () => {
       const ticket = await service.createRegisAddrChangeTicket(company.id);
 
       expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.registrationAddressChange);
       expect(ticket.assigneeId).toBe(userSecretary.id);
       expect(ticket.status).toBe(TicketStatus.open);
     });
@@ -149,6 +155,8 @@ describe('TicketsService', () => {
       const ticket = await service.createRegisAddrChangeTicket(company.id);
 
       expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.registrationAddressChange);
       expect(ticket.assigneeId).toBe(user.id);
       expect(ticket.status).toBe(TicketStatus.open);
     });
@@ -170,6 +178,8 @@ describe('TicketsService', () => {
       const ticket = await service.createRegisAddrChangeTicket(company.id);
 
       expect(ticket.category).toBe(TicketCategory.corporate);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.registrationAddressChange);
       expect(ticket.assigneeId).toBe(userSecretary.id);
       expect(ticket.status).toBe(TicketStatus.open);
     });
@@ -274,6 +284,8 @@ describe('TicketsService', () => {
       });
 
       expect(ticket.category).toBe(TicketCategory.management);
+      expect(ticket.companyId).toBe(company.id);
+      expect(ticket.type).toBe(TicketType.strikeOff);
       expect(ticket.assigneeId).toBe(userDirector.id);
       expect(ticket.status).toBe(TicketStatus.open);
 
