@@ -33,15 +33,22 @@ describe('ReportsController', () => {
   });
 
   describe('report', () => {
-    it('if the service create managementReport successfully', () => {
+    it('if the service get report successfully', () => {
       mockReportsService.state.mockReturnValue('proccessing');
 
       const report = controller.report();
-      console.log(report);
 
       expect(report['accounts.csv']).toBe('proccessing');
       expect(report['yearly.csv']).toBe('proccessing');
       expect(report['fs.csv']).toBe('proccessing');
+    });
+  });
+
+  describe('generate', () => {
+    it('if the service generate report successfully', () => {
+      const report = controller.generate();
+
+      expect(report.message).toBe('proccessing');
     });
   });
 });
