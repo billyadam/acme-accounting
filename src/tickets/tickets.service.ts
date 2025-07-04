@@ -45,6 +45,7 @@ export class TicketsService {
     const assignees = await User.findAll({
       where: { companyId, role: validRole },
       order: [['createdAt', 'DESC']],
+      limit: 2,
     });
 
     if (!assignees.length) {
