@@ -209,7 +209,7 @@ describe('TicketsService', () => {
     it('if there is no secretaries but multiple directors, throw', async () => {
       const company = await Company.create({ name: 'test' });
       await User.create({
-        name: 'Test Dicrector',
+        name: 'Test Director',
         role: UserRole.director,
         companyId: company.id,
       });
