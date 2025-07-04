@@ -16,7 +16,7 @@ export class TicketsService {
   async createManagementReportTicket(companyId: number) {
     const category = TicketCategory.accounting;
     const type = TicketType.managementReport;
-    const validRole = [UserRole.accountant];
+    const validRole = UserRole.accountant;
 
     const assignee = await User.findOne({
       where: { companyId, role: validRole },
@@ -24,9 +24,8 @@ export class TicketsService {
     });
 
     if (!assignee) {
-      const userRoleStr = validRole.join(' or ');
       throw new ConflictException(
-        `Cannot find user with role ${userRoleStr} to create a ticket`,
+        `Cannot find user with role ${validRole} to create a ticket`,
       );
     }
 
@@ -41,7 +40,7 @@ export class TicketsService {
   async createStrikeOffTicket(companyId: number) {
     const category = TicketCategory.management;
     const type = TicketType.strikeOff;
-    const validRole = [UserRole.director];
+    const validRole = UserRole.director;
 
     const assignees = await User.findAll({
       where: { companyId, role: validRole },
@@ -49,9 +48,8 @@ export class TicketsService {
     });
 
     if (!assignees.length) {
-      const userRoleStr = validRole.join(' or ');
       throw new ConflictException(
-        `Cannot find user with role ${userRoleStr} to create a ticket`,
+        `Cannot find user with role ${validRole} to create a ticket`,
       );
     }
 
@@ -89,7 +87,7 @@ export class TicketsService {
   async createRegisAddrChangeTicket(companyId: number) {
     const category = TicketCategory.corporate;
     const type = TicketType.registrationAddressChange;
-    const validRole = [UserRole.corporateSecretary, UserRole.director];
+    const validRoles = [UserRole.corporateSecretary, UserRole.director];
 
     const prevRegisAddrTicket = await Ticket.findOne({
       where: { companyId, type: TicketType.registrationAddressChange },
@@ -101,12 +99,12 @@ export class TicketsService {
       );
 
     const assignees = await User.findAll({
-      where: { companyId, role: validRole },
+      where: { companyId, role: validRoles },
       order: [['createdAt', 'DESC']],
     });
 
     if (!assignees.length) {
-      const userRoleStr = validRole.join(' or ');
+      const userRoleStr = validRoles.join(' or ');
       throw new ConflictException(
         `Cannot find user with role ${userRoleStr} to create a ticket`,
       );
