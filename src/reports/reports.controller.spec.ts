@@ -7,6 +7,7 @@ describe('ReportsController', () => {
   let controller: ReportsController;
 
   const mockReportsService = {
+    state: jest.fn(),
     accounts: jest.fn(),
     yearly: jest.fn(),
     fs: jest.fn(),
@@ -29,5 +30,18 @@ describe('ReportsController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('report', () => {
+    it('if the service create managementReport successfully', () => {
+      mockReportsService.state.mockReturnValue('proccessing');
+
+      const report = controller.report();
+      console.log(report);
+
+      expect(report['accounts.csv']).toBe('proccessing');
+      expect(report['yearly.csv']).toBe('proccessing');
+      expect(report['fs.csv']).toBe('proccessing');
+    });
   });
 });
