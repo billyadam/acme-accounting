@@ -47,6 +47,9 @@ describe('ReportsController', () => {
   describe('generate', () => {
     it('if the service generate report successfully', () => {
       const report = controller.generate();
+      expect(mockReportsService.accounts).toHaveBeenCalledWith();
+      expect(mockReportsService.yearly).toHaveBeenCalledWith();
+      expect(mockReportsService.fs).toHaveBeenCalledWith();
 
       expect(report.message).toBe('proccessing');
     });
