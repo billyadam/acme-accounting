@@ -57,7 +57,7 @@ export class TicketsService {
     const assignee = assignees[0];
     if (assignees.length > 1)
       throw new ConflictException(
-        `Multiple users with role ${UserRole.director}. Cannot create a ticket`,
+        `Multiple users with role ${validRole}. Cannot create a ticket`,
       );
 
     const resTicket = await this.sequelize.transaction(async (t) => {
