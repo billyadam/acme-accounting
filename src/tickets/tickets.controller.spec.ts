@@ -36,11 +36,8 @@ describe('TicketsController', () => {
     controller = module.get<TicketsController>(TicketsController);
   });
 
-  it('should be defined', async () => {
+  it('should be defined', () => {
     expect(controller).toBeDefined();
-
-    const res = await controller.findAll();
-    console.log(res);
   });
 
   describe('findAll', () => {
