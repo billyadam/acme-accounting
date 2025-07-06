@@ -183,6 +183,5 @@ describe('TicketsController', () => {
         }),
       ).rejects.toEqual(error);
     });
-    // });
   });
 });
