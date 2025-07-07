@@ -98,7 +98,7 @@ describe('TicketsService', () => {
       expect(ticket.status).toBe(TicketStatus.open);
     });
 
-    it('if there is already another registrationAddressChange ticket, throw', async () => {
+    it('if there is already another open registrationAddressChange ticket, throw', async () => {
       const company = await Company.create({ name: 'test' });
       const user = await User.create({
         name: 'Test Director',
@@ -116,7 +116,7 @@ describe('TicketsService', () => {
         service.createRegisAddrChangeTicket(company.id),
       ).rejects.toEqual(
         new ConflictException(
-          `Ticket with type ${TicketType.registrationAddressChange} already existed for this company`,
+          `Open ticket with type ${TicketType.registrationAddressChange} already existed for this company`,
         ),
       );
     });
